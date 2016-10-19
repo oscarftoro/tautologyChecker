@@ -21,7 +21,8 @@ module Checking =
   //(landed → ¬ saintly)
   let goal = implies (Conj(assumption1,
                            assumption2),concl)
-
+  
+  let pq =  (Conj(rich,saintly), Conj(landed, Neg rich))
 [<EntryPoint>]
 let main argv =
 
@@ -30,9 +31,12 @@ let main argv =
   let res = show Checking.goal
   printfn "%s" res
 
-
-
-  //let notAssump2 = nnf assumption2;
+  
   printfn "assumption 2 in NNF:"
   printfn "%s" ((nnf >> show) Checking.assumption2)
+  
+  printfn "test distrib ((rich ∧ saintly) , (landed ∧ ¬rich))"
+
+  printfn "%s" ((distrib >> show) Checking.pq)
+  
   0

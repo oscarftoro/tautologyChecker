@@ -24,8 +24,7 @@ module TC =
             if precedence > 1 then
               "(" + showHlpr precedence p + " | " + showHlpr precedence  q +  ")"
             else showHlpr 1 p  + " | " + showHlpr 1 q;
-    in showHlpr 0 arg
-
+    in showHlpr 3 arg
 
   //evaluate propositions
   let rec evalProp trues arg =
@@ -48,3 +47,16 @@ module TC =
       | (Neg (Disj (p,q)))   -> nnf (Conj (Neg p, Neg q))
       | (Conj(p,q))          -> Conj(nnf p, nnf q)
       | (Disj(p,q))          -> Disj(nnf p, nnf q);
+      
+  //To check whether p is a tautology, reduce it to an equivalent
+  //proposition in conjuctive normal form(CNF)
+  //replace p ∨ (q ∧ r) by (p ∨ q) ∧ (p ∨ r)
+  //(q ∧ r) ∨ p by (q ∨ p) ∧ (r ∨ p)
+
+  //computes the disjunction p ∨ q in CNF,
+  //given p and q in CNF :)
+  let rec distrib pq =
+    match pq with
+      | (p, Conj(q,r)) -> Conj(distrib(p,q), distrib(p,r))
+      | (Conj(q,r),p)  -> Conj(distrib(q,p), distrib(r,p))
+      | (p,q)          -> Disj(p,q);
