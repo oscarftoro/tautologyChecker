@@ -24,6 +24,7 @@ module Checking =
   //two propositions p and q
   let pq =  (Conj(rich,saintly), Conj(landed, Neg rich))
 
+  let cgoal = goal |> (nnf >> cnf)
   
 [<EntryPoint>]
 let main argv =
@@ -42,6 +43,8 @@ let main argv =
   printfn "%s" ((distrib >> show) Checking.pq)
 
   printfn "%s" "we convert the desired goal into CNF"
-  printfn "%s" ((nnf >> cnf >> show) Checking.goal)
-  
+  printfn "%s" (show Checking.cgoal)
+
+  printfn "%s" "check that cgoal is a tautology"
+  printfn "%b" (taut Checking.cgoal)
   0

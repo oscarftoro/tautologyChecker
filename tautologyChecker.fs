@@ -1,6 +1,8 @@
 namespace TautologyChecker
+
 // as seen in ML for the working programmer by L.C. Paulson
 module TC =
+  
   let x = 42
   type prop = Atom  of string
             | Neg   of prop
@@ -66,4 +68,39 @@ module TC =
     match p with
       | (Conj(p,q))  -> Conj (cnf p, cnf q)
       | (Disj(p,q))  -> distrib (cnf p,cnf q)
-      | p            -> p 
+      | p            -> p;
+
+      
+  exception NonCNF of string
+  //returns a list of positive atoms in a disjunction
+  let rec positives disj =
+    match disj with
+      | (Atom a)        -> [a]
+      | (Neg (Atom _ )) -> []
+      | (Disj(p,q))     -> positives p @ positives q
+      | _               -> raise (NonCNF("not a CNF"))
+
+  //returns a list of negative Atoms
+  let rec negatives disj =
+    match disj with
+      | (Atom _ )     -> []
+      | (Neg(Atom a)) -> [a]
+      | (Disj(p,q))   -> negatives p @ negatives q
+      | _   -> raise(NonCNF("not a CNF"))
+      
+  //include all elements of xs that also belong to ys
+  let rec inter tuple =
+    match tuple with
+      | ([],ys)    -> []
+      | (x::xs,ys) -> if List.exists (fun e -> e = x) ys
+                        then x :: inter(xs,ys)
+                        else      inter(xs,ys)
+                        
+  //preform a tautology ceck
+  let rec taut p =
+    match p with
+      | (Conj (p,q)) -> taut p && taut q
+      | p       ->
+        not (List.isEmpty (inter (positives p, negatives p)))
+
+  
