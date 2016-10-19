@@ -60,3 +60,10 @@ module TC =
       | (p, Conj(q,r)) -> Conj(distrib(p,q), distrib(p,r))
       | (Conj(q,r),p)  -> Conj(distrib(q,p), distrib(r,p))
       | (p,q)          -> Disj(p,q);
+
+  //CNF of p ∧ q = the conjunction of p and q
+  let rec cnf p =
+    match p with
+      | (Conj(p,q))  -> Conj (cnf p, cnf q)
+      | (Disj(p,q))  -> distrib (cnf p,cnf q)
+      | p            -> p 

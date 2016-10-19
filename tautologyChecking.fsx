@@ -21,8 +21,10 @@ module Checking =
   //(landed → ¬ saintly)
   let goal = implies (Conj(assumption1,
                            assumption2),concl)
-  
+  //two propositions p and q
   let pq =  (Conj(rich,saintly), Conj(landed, Neg rich))
+
+  
 [<EntryPoint>]
 let main argv =
 
@@ -38,5 +40,8 @@ let main argv =
   printfn "test distrib ((rich ∧ saintly) , (landed ∧ ¬rich))"
 
   printfn "%s" ((distrib >> show) Checking.pq)
+
+  printfn "%s" "we convert the desired goal into CNF"
+  printfn "%s" ((nnf >> cnf >> show) Checking.goal)
   
   0
