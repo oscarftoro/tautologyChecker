@@ -25,6 +25,10 @@ module Checking =
   let pq =  (Conj(rich,saintly), Conj(landed, Neg rich))
 
   let cgoal = goal |> (nnf >> cnf)
+
+  let s1 = BiImp(Atom "a" , Disj(Atom "b", Atom "e"))
+  let s1nnf = nnf s1
+  let s1CNF = 
   
 [<EntryPoint>]
 let main argv =
@@ -47,4 +51,5 @@ let main argv =
 
   printfn "%s" "check that cgoal is a tautology"
   printfn "%b" (taut Checking.cgoal)
-  0
+  
+ 

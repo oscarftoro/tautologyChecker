@@ -8,6 +8,8 @@ module TC =
             | Neg   of prop
             | Conj  of prop * prop
             | Disj  of prop * prop
+            | Imp   of prop * prop
+            | BiImp of prop * prop
             
   //implication p → q is equivalent to (~p) ∧ q
   let implies(p,q) = Disj(Neg p,q)
@@ -31,11 +33,13 @@ module TC =
   //evaluate propositions
   let rec evalProp trues arg =
     match arg with
-      | (Atom a)    -> List.exists (fun elem -> elem = a) trues
-      | (Neg p)     -> not (evalProp trues p)
-      | (Conj(p,q)) -> evalProp trues p && evalProp trues q
-      | (Disj(p,q)) -> evalProp trues p  || evalProp trues q
-    
+      | (Atom a)     -> List.exists (fun elem -> elem = a) trues
+      | (Neg p)      -> not (evalProp trues p)
+      | (Conj(p,q))  -> evalProp trues p && evalProp trues q
+      | (Disj(p,q))  -> evalProp trues p || evalProp trues q
+      | (Imp(p,q))   -> not (evalProp trues p) || evalProp trues q 
+      | (BiImp(p,q)) -> evalProp trues (Imp(p,q)) && evalProp trues (Imp(q,p))
+
   //negation normal form (rewrite rules). repeatedly replace:
   //¬¬p by p
   //¬(p ∧ q) by (¬p) ∨ (¬q)
@@ -49,6 +53,8 @@ module TC =
       | (Neg (Disj (p,q)))   -> nnf (Conj (Neg p, Neg q))
       | (Conj(p,q))          -> Conj(nnf p, nnf q)
       | (Disj(p,q))          -> Disj(nnf p, nnf q);
+      | (Imp(p,q))           -> nnf (Disj(Neg p ,q))
+      | (BiImp(p,q))         -> nnf (Conj(Imp(p,q),Imp(q,p)))
       
   //To check whether p is a tautology, reduce it to an equivalent
   //proposition in conjuctive normal form(CNF)
@@ -104,3 +110,5 @@ module TC =
         not (List.isEmpty (inter (positives p, negatives p)))
 
   
+  let s1 = BiImp (Atom "a", Disj(Atom "b", Atom "e"))
+  let s1NNF = nnf s1 
